@@ -1,0 +1,10 @@
+services:
+    redis:
+        image: redis:latest
+
+    fake_chat_watcher:
+        image: fake_watcher:latest
+        depends_on:
+            - redis
+        command:
+          python main.py
