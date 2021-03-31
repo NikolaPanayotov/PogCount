@@ -62,7 +62,6 @@ class chatWatcher(object):
             self.sock.send("PONG\n".encode('utf-8'))
         # Valid message detected, parse and return any emotes
         elif len(resp) > 0:
-            # emotesFound = self.parseMessage(resp)
             username = None
             channel = None
             message = None
