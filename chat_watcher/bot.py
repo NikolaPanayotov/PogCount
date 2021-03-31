@@ -94,3 +94,4 @@ bot.joinChat()
 while True:
     emotes = bot.messageListen()
     print(emotes)
+    
