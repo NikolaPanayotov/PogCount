@@ -3,8 +3,8 @@ services:
         image: redis:latest
 
     fake_chat_watcher:
-        image: fake_watcher:latest
+        image: fake-chat-watcher:latest
         depends_on:
             - redis
         command:
-          python main.py
+          python -u main.py
