@@ -2,3 +2,4 @@ node_modules
 .env
 .python-version
 /chat_watcher/__pycache__/
+.vscode
