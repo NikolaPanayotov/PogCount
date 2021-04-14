@@ -1,11 +1,9 @@
 # Packages
 import socket
 import re
-import sys
-import irc.bot
-import requests
 # Local imports
 from emotes import emotes
+
 
 class chatWatcher(object):
     """Single instance of a bot to join a channel and read chat.
@@ -36,15 +34,15 @@ class chatWatcher(object):
         sock.send(f"NICK {self.username}\n".encode('utf-8'))
         sock.send(f"JOIN {self.channel}\n".encode('utf-8'))
         # First 2 resp are a welcome message
-        resp = sock.recv(2048).decode('utf-8')
-        resp = sock.recv(2048).decode('utf-8')
+        sock.recv(2048).decode('utf-8')
+        sock.recv(2048).decode('utf-8')
         self.sock = sock
         print(f"CONNECTED TO {self.channel} AS {self.username}")
         return sock
 
     def messageListen(self):
-        """Listens for messages from chatroom. Sends back PONG message if server pings the bot,
-        and handles any valid messages in the chat.
+        """Listens for messages from chatroom. Sends back PONG message if
+        server pings the bot, and handles any valid messages in the chat.
 
         Returns:
             dictionary: dict of detected emotes where
@@ -52,7 +50,8 @@ class chatWatcher(object):
             value = number of occurences in message
         """
         if self.sock is None:
-            print("Error! Socket does not exist. Did you forget to joinChat() first?")
+            print("Error! Socket does not exist. "
+                  "Did you forget to joinChat() first?")
             return
         emotesFound = None
         resp = self.sock.recv(2048).decode('utf-8')
@@ -66,21 +65,22 @@ class chatWatcher(object):
             channel = None
             message = None
             emotesFound = {}
+            regex_string = ':(.*)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #(.*) :(.*)'
             try:
-                username, channel, message = re.search(':(.*)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #(.*) :(.*)', resp).groups()
+                username, channel, message = re.search(regex_string, resp).groups()
             except AttributeError:
                 print(f"Error parsing message: {resp}")
             if message is not None:
-                # Remove return key and split into words. Emotes must be properly spaced/spelled/capitalized
+                # Remove return key and split into words.
+                # Emotes must be properly spaced/spelled/capitalized
                 for word in message.strip('\r').split(' '):
                     if word in self.emotes:
                         if word not in emotesFound.keys():
                             emotesFound[word] = 1
                         else:
                             emotesFound[word] += 1
-            
+
         return emotesFound
-        
 
 
 # Starting inputs (will be done with args or json later)
@@ -92,6 +92,5 @@ ircChannel = 'hasanabi'
 bot = chatWatcher(nickname, token, ircChannel)
 bot.joinChat()
 while True:
-    emotes = bot.messageListen()
-    print(emotes)
-    
+    emotesCount = bot.messageListen()
+    print(emotesCount)
