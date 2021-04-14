@@ -16,7 +16,9 @@ TWITCH_MESSAGES = [
 ]
 
 if __name__ == "__main__":
-    hostname = '0.0.0.0'
+    # hostname 0.0.0.0 works with running redis container and script locally
+    # 'redis' hostname is set based to docker-compose file (named redis there)
+    hostname = 'redis'
     print(f"Attempting to connect to redis at: {hostname}")
     rdb = redis.Redis(host=hostname, port=6379, db=0)
     while True:

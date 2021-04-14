@@ -6,6 +6,7 @@ services:
         volumes: 
             - ./redis.conf:/redis.conf
         command: ["redis-server", "/redis.conf"]
+        container_name: redis
 
     fake_chat_watcher:
         image: fake-chat-watcher:latest
