@@ -22,7 +22,6 @@ if __name__ == "__main__":
     print(f"Attempting to connect to redis at: {hostname}")
     rdb = redis.Redis(host=hostname, port=6379, db=0)
     while True:
-        # TODO: Send these to Redis instead smiley face
         message = TWITCH_MESSAGES[randrange(len(TWITCH_MESSAGES))]
         print(f"{message}")
         try:
