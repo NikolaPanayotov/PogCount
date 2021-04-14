@@ -18,6 +18,12 @@ docker stop $(docker ps -a -q)
 
 # remove all containers
 docker rm $(docker ps -a -q)
+
+# to rebuild fake_chat_watcher (must be in fake_chat_watcher dir)
+docker build -t fake-chat-watcher .
+
+# to open redis CLI while container is running
+docker exec -it <redis_containerID> redis-cli
 ```
 
 # Current functioning components:
