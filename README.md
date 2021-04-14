@@ -35,7 +35,7 @@ docker exec -it <redis_containerID> redis-cli
 ### Redis cached storage
 - Runs from standard redis image on dockerhub
 - Uses a `redis.conf` file to allow for outside connections
-  - This seems to be a *security risk*! So will need to be changed in the future?
+  - This seems to be a **security risk!** So will need to be changed in the future?
 
 # TODO
 ### Bot manager
