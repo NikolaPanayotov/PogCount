@@ -7,8 +7,8 @@ services:
             MONGO_INITDB_ROOT_PASSWORD: rootpassword
         ports:
             - 27017:27017
-        volumes:
-            - mongo_data_container:/data/db
+        # volumes:
+            # - mongo_data_container:/data/db
 
     redis:
         image: redis:latest
