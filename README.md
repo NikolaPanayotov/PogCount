@@ -36,15 +36,17 @@ docker exec -it <redis_containerID> redis-cli
 - Runs from standard redis image on dockerhub
 - Uses a `redis.conf` file to allow for outside connections
   - This seems to be a **security risk!** So will need to be changed in the future?
+### Data migrator
+- Python file which reads from redis cache, clears it, and writes to mongoDB for persistent storage
+### mongoDB persistent database
+- Persistent storage containing counts for all emotes
+### Node/Express back-end
+- Reads from mongoDB to obtain emote counts
+- Will create webpage for now using EJS (to be eventually replaced by an actual front-end)
+
 
 # TODO
 ### Bot manager
 - There is currently a test/scratch file `fake_chat_watcher/bot_manager.py` that spins up fake chat watcher images. 
 - The goal is to have the bot manager be able to start/stop bots as needed based on popular streams.
 - This will probably be called in the `docker-compose-test.yml` instead of just running 1 chat watcher and connecting it to redis.
-### mongoDB persistent database
-- This will periodically read from the redis cache and increment any new emote counts to existing emote counts
-### Node/Express back-end
-- This will read from the database to obtain emote counts
-- Will clear redis cache after the database reads from it
-- Also will create webpage for now using EJS (to be eventually replaced by an actual front-end)
