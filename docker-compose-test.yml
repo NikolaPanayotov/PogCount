@@ -3,6 +3,7 @@ services:
         container_name: mongo
         image: mongo:latest
         environment:
+            MONGO_INITDB_DATABASE: pogcount
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: rootpassword
         ports:
@@ -35,3 +36,13 @@ services:
             - mongo
         command:
             python -u migrator.py
+
+    backend:
+        container_name: backend
+        image: backend:latest
+        ports:
+            - 3000:3000
+        depends_on:
+            - mongo
+        command:
+            node index.js
