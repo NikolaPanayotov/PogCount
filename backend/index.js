@@ -9,16 +9,35 @@ const port = 3000;
 app.set('view engine', 'ejs');
 
 // Mongoose connection to DB
-mongoose.connect('mongodb://mongo:27017/pogcount', {useNewUrlParser: true, 
+mongoose.connect('mongodb://mongo1:27017/pogcount', {useNewUrlParser: true, 
                                                     useUnifiedTopology: true,
-                                                    user: 'root',
-                                                    pass: 'rootpassword',
-                                                    authSource: 'admin'});x
+                                                    // user: 'root',
+                                                    // pass: 'rootpassword',
+                                                    // authSource: 'admin'
+                });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
     console.log("Database connected");
 });
+
+async function updateCount(data) {
+    try {
+        emote = await emoteCount.findById(data.documentKey._id)
+        console.log(`${emote.name} updated! New count is: ${emote.count}`)
+    }
+    catch(e) {
+        console.log(e)
+        console.log(`ERROR! Could not find ${emote} in DB!`)
+    }
+}
+
+ // Create a change stream. The 'change' event gets emitted when there's a
+  // change in the database
+emoteCount.watch()
+    .on('change', async (data) =>  {
+        updateCount(data)
+    });
 
 app.get('/', async (req, res) => {
     res.render('home.ejs')
