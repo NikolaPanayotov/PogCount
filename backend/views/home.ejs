@@ -15,13 +15,13 @@
     </ul>
 
     <script>
+        // eventSource will receive events from /stream
         const eventSource = new EventSource('http://localhost:3000/stream')
-  
         eventSource.onmessage = (e) => {
+            // Event data is {name, count} object
             console.log(`Event data: ${e.data}`)
             let dataObject = JSON.parse(e.data)
             let searchString = `#${dataObject.name}Count`
-            console.log(`Looking for id: ${searchString}`)
             let emoteCount = document.querySelector(searchString)
             emoteCount.innerText = dataObject.count
         }

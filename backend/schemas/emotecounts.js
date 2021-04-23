@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+// Schema defines structure of each entry in database collection
 const emoteCountSchema = new Schema({
     name: {
         type: String,
@@ -16,4 +17,5 @@ const emoteCountSchema = new Schema({
     }
 });
 
+// Compile the schema to point to 'emoteCounts' 
 module.exports = mongoose.model('emoteCount', emoteCountSchema, 'emoteCounts')
