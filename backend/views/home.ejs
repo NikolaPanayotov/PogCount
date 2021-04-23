@@ -9,9 +9,23 @@
 <body>
     <h1>Twitch Emote Tracker</h1>
     <ul>
-        <li>6 PogChamps</li>
-        <li>5 Wutfaces</li>
-        <li>999999 Kappas</li>
+        <li><span id="Kappa">Kappa: </span><span id="KappaCount">0</span></li>
+        <li><span id="Keepo">Keepo: </span><span id="KeepoCount">0</span></li>
+        <li><span id="PogChamp">PogChamp </span><span id="PogChampCount">0</span></li>
     </ul>
+
+    <script>
+        const eventSource = new EventSource('http://localhost:3000/stream')
+  
+        eventSource.onmessage = (e) => {
+            console.log(`Event data: ${e.data}`)
+            let dataObject = JSON.parse(e.data)
+            let searchString = `#${dataObject.name}Count`
+            console.log(`Looking for id: ${searchString}`)
+            let emoteCount = document.querySelector(searchString)
+            emoteCount.innerText = dataObject.count
+        }
+    </script>
+
 </body>
 </html>
