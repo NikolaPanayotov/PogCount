@@ -2,47 +2,52 @@ import redis
 import pymongo
 import time
 
-hostname = 'redis'
-rdb = redis.Redis(host=hostname, port=6379, db=0)
+from connections import redisConnect, mongoConnect
 
-mongoClient = None
-# Initialize mongoDB connection
-while mongoClient is None:
-    try:
-        mongoClient = pymongo.MongoClient(
-            host='mongo1:27017,mongo2:27018,mongo3:27019',
-            serverSelectionTimeoutMS=3000,  # 3 second timeout
-            replicaSet='rs0'
-            # username='root',
-            # password='rootpassword',
-        )
-    except pymongo.errors.ServerSelectionTimeoutError as err:
-        # set the client and DB name list to 'None' and `[]` if exception
-        mongoClient = None
-        database_names = []
-        print(f"Error connecting to mongoDB: {err}")
-        print("Retrying in 5 seconds...")
-        time.sleep(5)
 
-mdb = mongoClient.pogcount
-emotesCollection = mdb["emoteCounts"]
+def migrateData(rdb, mongo):
+    mdb = mongo.pogcount
+    emotesCollection = mdb["emoteCounts"]
 
-while True:
-    # Iterate through all keys in redis
-    try:
-        for key in rdb.scan_iter():
-            # Save the current value and clear redis for the key
-            emoteCount = rdb.get(key)
-            key = key.decode('utf-8')
-            emoteCount = int(emoteCount)
-            print(f"Migrator: {key} -- {emoteCount}")
-            rdb.set(key, 0)
-            emotesCollection.update_one({'name': key},
-                                        {'$setOnInsert': {'name': key},
-                                         '$inc': {'count': emoteCount}},
-                                        upsert=True)
-            # mdb.pogcount.update({'emote': key}, {'$inc': {'item': 1}})
-            # Write value to mongo[key] = value
-    except redis.exceptions.ConnectionError:
-        print('ERROR CONNECTING TO REDIS!')
-    time.sleep(1)
+    while True:
+        # Iterate through all keys in redis
+        try:
+            for key in rdb.scan_iter():
+                # Save the current value and clear redis for the key
+                emoteCount = rdb.get(key)
+                key = key.decode('utf-8')
+                emoteCount = int(emoteCount)
+                print(f"Migrator: {key} -- {emoteCount}")
+                rdb.set(key, 0)
+                emotesCollection.update_one({'name': key},
+                                            {'$setOnInsert': {'name': key},
+                                            '$inc': {'count': emoteCount}},
+                                            upsert=True)
+                # mdb.pogcount.update({'emote': key}, {'$inc': {'item': 1}})
+                # Write value to mongo[key] = value
+        except redis.exceptions.ConnectionError:
+            print('ERROR CONNECTING TO REDIS!')
+        time.sleep(0.5)
+
+
+def init_mongo(mongoConneciton):
+    mdb = mongoConneciton.pogcount
+    emotesCollection = mdb["emoteCounts"]
+    # Get all twitch emotes through API
+    # For each emote in the returned list:
+        # create/update db entry with image, set count to 0, 
+    #Done!
+
+
+if __name__ == "__main__":
+    redisHost = 'redis'
+    redisPort = 6379
+    redisDb = 0
+    mongoHost = 'mongo1:27017,mongo2:27018,mongo3:27019'
+    mongoSet = 'rs0'
+
+    rdb = redisConnect(redisHost, redisPort, redisDb)
+    mongo = mongoConnect(mongoHost, mongoSet)
+
+    init_mongo(mongo)
+    migrateData(rdb, mongo)
