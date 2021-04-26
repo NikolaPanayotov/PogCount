@@ -43,6 +43,9 @@ docker exec -it <redis_containerID> redis-cli
 ### Node/Express back-end
 - Reads from mongoDB to obtain emote counts
 - Will create webpage for now using EJS (to be eventually replaced by an actual front-end)
+### Realtime data streaming
+- Backend subscribes for change events from DB
+- Backend sends an event to frontend asynchronously
 
 
 # TODO
