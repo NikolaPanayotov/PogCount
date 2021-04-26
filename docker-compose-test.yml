@@ -1,15 +1,72 @@
 services:
-    mongo:
-        container_name: mongo
+    mongo-setup:
+        container_name: mongo-setup
         image: mongo:latest
-        environment:
-            MONGO_INITDB_DATABASE: pogcount
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: rootpassword
+        restart: on-failure
+        networks:
+          default:
+        volumes:
+          - ./docker_helpers:/docker_helpers
+        entrypoint: ["bash", "/docker_helpers/mongo_setup.sh" ] # Make sure this file exists (see below for the setup.sh)
+        depends_on:
+          - mongo1
+          - mongo2
+          - mongo3
+    mongo1:
+        # hostname: mongo1
+        container_name: mongo1
+        image: mongo:latest
+        expose:
+            - 27017
         ports:
             - 27017:27017
+        restart: always
+        entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
         # volumes:
             # - mongo_data_container:/data/db
+        # volumes:
+            # - <VOLUME-DIR>/mongo/data1/db:/data/db # This is where your volume will persist. e.g. VOLUME-DIR = ./volumes/mongodb
+            # - <VOLUME-DIR>/mongo/data1/configdb:/data/configdb
+        environment:
+            MONGO_INITDB_DATABASE: pogcount
+            # MONGO_INITDB_ROOT_USERNAME: root
+            # MONGO_INITDB_ROOT_PASSWORD: rootpassword
+
+    mongo2:
+        # hostname: mongo2
+        container_name: mongo2
+        image: mongo:latest
+        ports:
+            - 27018:27017
+        restart: always
+        entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+        # volumes:
+            # - mongo_data_container:/data/db
+        # volumes:
+            # - <VOLUME-DIR>/mongo/data1/db:/data/db # This is where your volume will persist. e.g. VOLUME-DIR = ./volumes/mongodb
+            # - <VOLUME-DIR>/mongo/data1/configdb:/data/configdb
+        environment:
+            MONGO_INITDB_DATABASE: pogcount
+            # MONGO_INITDB_ROOT_USERNAME: root
+            # MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    
+    mongo3:
+        # hostname: mongo3
+        container_name: mongo3
+        image: mongo:latest
+        ports:
+            - 27019:27017
+        restart: always
+        entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+        # volumes:
+            # - mongo_data_container:/data/db
+        # volumes:
+            # - <VOLUME-DIR>/mongo/data1/db:/data/db # This is where your volume will persist. e.g. VOLUME-DIR = ./volumes/mongodb
+            # - <VOLUME-DIR>/mongo/data1/configdb:/data/configdb
+        environment:
+            MONGO_INITDB_DATABASE: pogcount
+            # MONGO_INITDB_ROOT_USERNAME: root
+            # MONGO_INITDB_ROOT_PASSWORD: rootpassword
 
     redis:
         container_name: redis
@@ -31,9 +88,13 @@ services:
     migrator:
         container_name: migrator
         image: data-migrator:latest
+        restart: on-failure
         depends_on:
             - redis
-            - mongo
+            - mongo-setup
+            - mongo1
+            - mongo2
+            - mongo3
         command:
             python -u migrator.py
 
@@ -43,6 +104,6 @@ services:
         ports:
             - 3000:3000
         depends_on:
-            - mongo
+            - mongo-setup
         command:
             node index.js

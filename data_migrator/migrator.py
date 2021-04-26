@@ -10,10 +10,11 @@ mongoClient = None
 while mongoClient is None:
     try:
         mongoClient = pymongo.MongoClient(
-            host='mongo:27017',
+            host='mongo1:27017,mongo2:27018,mongo3:27019',
             serverSelectionTimeoutMS=3000,  # 3 second timeout
-            username='root',
-            password='rootpassword',
+            replicaSet='rs0'
+            # username='root',
+            # password='rootpassword',
         )
     except pymongo.errors.ServerSelectionTimeoutError as err:
         # set the client and DB name list to 'None' and `[]` if exception
@@ -34,7 +35,6 @@ while True:
             emoteCount = rdb.get(key)
             key = key.decode('utf-8')
             emoteCount = int(emoteCount)
-            print(f"Key type: {type(key)} // Value type: {type(emoteCount)}")
             print(f"Migrator: {key} -- {emoteCount}")
             rdb.set(key, 0)
             emotesCollection.update_one({'name': key},
