@@ -12,7 +12,7 @@ const emoteCountSchema = new Schema({
         type: Number,
         required: true
     },
-    url: {
+    imageUrl: {
         type: String
     }
 });
