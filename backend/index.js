@@ -28,8 +28,9 @@ db.once('open', () => {
 }); 
 
 // Landing page (only planned page?)
-app.get('/', (req, res) => {
-    res.render('home.ejs')
+app.get('/', async (req, res) => {
+    const emotes = await emoteCount.find({})
+    res.render('home.ejs', {emotes})
 });
 
 // Stream path to dispatch realtime events
@@ -49,9 +50,9 @@ app.get('/stream', async(req, res) => {
             console.log(`data: ${JSON.stringify(data)}`)
             res.write(`data: ${JSON.stringify(data)}\n\n`)
         })
-        req.on('close', () => {
-            Stream.removeListener('push')
-        })
+        // req.on('close', () => {
+            // Stream.removeListener('push', )
+        // })
     }
     catch (err) {
         res.status(500)

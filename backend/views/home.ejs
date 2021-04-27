@@ -9,9 +9,12 @@
 <body>
     <h1>Twitch Emote Tracker</h1>
     <ul>
-        <li><span id="Kappa">Kappa: </span><span id="KappaCount">0</span></li>
-        <li><span id="Keepo">Keepo: </span><span id="KeepoCount">0</span></li>
-        <li><span id="PogChamp">PogChamp </span><span id="PogChampCount">0</span></li>
+        <% for (let emote of emotes) { %>
+            <li>
+                <img id="<%= emote.name %> " src=<%= emote.imageUrl %> alt="">
+                <span id="<%= emote.name %>Count"><%= emote.count %> </span>
+            </li>
+        <% } %>
     </ul>
 
     <script>
