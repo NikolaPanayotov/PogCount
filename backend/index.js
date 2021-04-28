@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { EventEmitter } = require('events');
+const path = require('path');
 
 // Local Requirements
 const emoteCount = require('./schemas/emotecounts');
@@ -12,6 +13,7 @@ const { Stream } = require('./helpers/stream')
 const app = express();
 const port = 3000;
 app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')))
 
 // Mongoose connection to DB
 mongoose.connect('mongodb://mongo1:27017/pogcount', {useNewUrlParser: true, 

@@ -1,0 +1,27 @@
+.emotebox {
+    background-color: #E0E0DE;
+    margin: 1px;
+    text-align: center;
+    /* Safari 4+ */
+    /* -webkit-animation: flash 1s;  */
+    /* Fx 5+ */
+    /* -moz-animation:    flash 1s;  */
+    /* Opera 12+ */
+    /* -o-animation:      flash 1s;  */
+    /* IE 10+, Fx 29+ */
+    /* animation:         flash 1s;  */
+  }
+
+  
+  .run-animation {
+      animation: flash 0.75s;
+  }
+
+  @keyframes flash {
+    from {
+        background-color: #B5EDAB;
+    }
+    to {
+        background-color: #E0E0E0;
+    }
+  }
