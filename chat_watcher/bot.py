@@ -1,6 +1,7 @@
 # Packages
 import socket
 import re
+import redis
 # Local imports
 from emotes import emotes
 
@@ -21,6 +22,7 @@ class chatWatcher(object):
         self.server = 'irc.chat.twitch.tv'
         self.sock = None
         self.emotes = emotes
+        self.rdb = None
 
     def joinChat(self):
         """Connect to channel specified in the chatWatcher object.
@@ -39,6 +41,35 @@ class chatWatcher(object):
         self.sock = sock
         print(f"CONNECTED TO {self.channel} AS {self.username}")
         return sock
+
+    def redisConnect(self, hostname="redis", port=6379, db=0):
+        """Connects to redis cache. Sets object's rdb to the opened
+        redis connection for future writes.
+
+        Args:
+            hostname (str): redis host. Defaults to "redis".
+            port (int): port number. Defaults to 6379.
+            db (int): redis db to use. Defaults to 0.
+        """
+        print(f"Attempting to connect to redis at: {hostname}")
+        rdb = redis.Redis(host=hostname, port=port, db=db)
+        self.rdb = rdb
+
+    def redisWrite(self, emotesDict):
+        """Write the emotesDict of format (emote: count) into redis
+
+        Args:
+            emotesDict (dict): emoteName: emoteCount(per message) format
+        """
+        if self.rdb is None:
+            print("ERROR: Redis connection does not exist!")
+            return
+        for key, value in emotesDict.items():
+            try:
+                # print(f"Writing {key}: {value} to redis")
+                self.rdb.incr(key, value)
+            except redis.exceptions.ConnectionError:
+                print("ERROR: Could not connect to redis!")
 
     def messageListen(self):
         """Listens for messages from chatroom. Sends back PONG message if
@@ -64,7 +95,6 @@ class chatWatcher(object):
             username = None
             channel = None
             message = None
-            emotesFound = {}
             regex_string = ':(.*)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #(.*) :(.*)'
             try:
                 username, channel, message = re.search(regex_string, resp).groups()
@@ -75,6 +105,8 @@ class chatWatcher(object):
                 # Emotes must be properly spaced/spelled/capitalized
                 for word in message.strip('\r').split(' '):
                     if word in self.emotes:
+                        if emotesFound is None:
+                            emotesFound = {}
                         if word not in emotesFound.keys():
                             emotesFound[word] = 1
                         else:
@@ -83,14 +115,18 @@ class chatWatcher(object):
         return emotesFound
 
 
-# Starting inputs (will be done with args or json later)
-server = 'irc.chat.twitch.tv'
-port = 6667
-nickname = 'pogcount'
-token = 'oauth:do2xff0ei1fiiaz8tbexnrz3hmsoso'
-ircChannel = 'hasanabi'
-bot = chatWatcher(nickname, token, ircChannel)
-bot.joinChat()
-while True:
-    emotesCount = bot.messageListen()
-    print(emotesCount)
+if __name__ == "__main__":
+    # Starting inputs (will be done with args or json later)
+    server = 'irc.chat.twitch.tv'
+    port = 6667
+    nickname = 'pogcount'
+    token = 'oauth:do2xff0ei1fiiaz8tbexnrz3hmsoso'
+    ircChannel = 'xqcow'
+    hostname = 'redis'
+    bot = chatWatcher(nickname, token, ircChannel)
+    bot.joinChat()
+    bot.redisConnect(hostname)
+    while True:
+        emotesCount = bot.messageListen()
+        if emotesCount:
+            bot.redisWrite(emotesCount)
