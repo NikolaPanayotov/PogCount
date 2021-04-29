@@ -3,3 +3,4 @@ node_modules
 .python-version
 /chat_watcher/__pycache__/
 .vscode
+.DS_Store

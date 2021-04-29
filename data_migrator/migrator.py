@@ -19,19 +19,17 @@ def migrateData(rdb, mongo):
                 emoteCount = rdb.get(key)
                 key = key.decode('utf-8')
                 emoteCount = int(emoteCount)
-                print(f"Migrator: {key} -- {emoteCount}")
+                # print(f"Migrator: {key} -- {emoteCount}")
                 rdb.set(key, 0)
                 emotesCollection.update_one({'name': key},
                                             {'$setOnInsert': {'name': key},
                                             '$inc': {'count': emoteCount}},
                                             upsert=True)
-                # mdb.pogcount.update({'emote': key}, {'$inc': {'item': 1}})
-                # Write value to mongo[key] = value
         except redis.exceptions.ConnectionError:
             print('ERROR CONNECTING TO REDIS!')
         except pymongo.errors.ServerSelectionTimeoutError:
             print('ERROR WRITING TO MONGO!')
-        time.sleep(0.5)
+        time.sleep(0.2)
 
 
 def init_mongo(mongoConneciton):

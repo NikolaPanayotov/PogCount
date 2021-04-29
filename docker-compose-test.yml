@@ -73,17 +73,25 @@ services:
         image: redis:latest
         ports:
             - 6379:6379
-        # volumes:
-            # - ./redis.conf:/usr/local/etc/redis/redis.conf
-        # command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        volumes:
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
-    fake_chat_watcher:
-        container_name: fake_chat_watcher
-        image: fake-chat-watcher:latest
+    # fake_chat_watcher:
+    #     container_name: fake_chat_watcher
+    #     image: fake-chat-watcher:latest
+    #     depends_on:
+    #         - redis
+    #     command:
+    #       python -u main.py
+
+    chat_watcher:
+        container_name: chat_watcher
+        image: chat-watcher:latest
         depends_on:
             - redis
         command:
-          python -u main.py
+            python -u bot.py
 
     migrator:
         container_name: migrator
