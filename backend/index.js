@@ -31,7 +31,7 @@ db.once('open', () => {
 
 // Landing page (only planned page?)
 app.get('/', async (req, res) => {
-    const emotes = await emoteCount.find({})
+    const emotes = await emoteCount.find({}).sort({'count' : 'descending'})
     res.render('home.ejs', {emotes})
 });
 
