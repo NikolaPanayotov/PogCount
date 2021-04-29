@@ -85,7 +85,12 @@ class chatWatcher(object):
                   "Did you forget to joinChat() first?")
             return
         emotesFound = None
-        resp = self.sock.recv(2048).decode('utf-8')
+        try:
+            message = self.sock.recv(2048)
+            resp = message.decode('utf-8')
+        except UnicodeDecodeError:
+            print(f"Could not decode message! {message}")
+            return None
 
         # Send back a PONG to prevent bot from being auto kicked
         if resp.startswith('PING'):
