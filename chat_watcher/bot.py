@@ -2,9 +2,12 @@
 import socket
 import re
 import redis
+import os
+from dotenv import load_dotenv
 # Local imports
 from emotes import emotes
 
+load_dotenv()
 
 class chatWatcher(object):
     """Single instance of a bot to join a channel and read chat.
@@ -126,6 +129,8 @@ if __name__ == "__main__":
     port = 6667
     nickname = 'pogcount'
     token = 'oauth:do2xff0ei1fiiaz8tbexnrz3hmsoso'
+    token = os.getenv('OAUTH_TOKEN')
+    print(f"token: {token}")
     ircChannel = 'xqcow'
     hostname = 'redis'
     bot = chatWatcher(nickname, token, ircChannel)
