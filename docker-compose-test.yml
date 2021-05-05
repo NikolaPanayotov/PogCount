@@ -7,7 +7,7 @@ services:
           default:
         volumes:
           - ./docker_helpers:/docker_helpers
-        entrypoint: ["bash", "/docker_helpers/mongo_setup.sh" ] # Make sure this file exists (see below for the setup.sh)
+        entrypoint: ["bash", "/docker_helpers/mongo_setup.sh" ]
         depends_on:
           - mongo1
           - mongo2
@@ -77,21 +77,20 @@ services:
             - ./redis.conf:/usr/local/etc/redis/redis.conf
         command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
-    # fake_chat_watcher:
-    #     container_name: fake_chat_watcher
-    #     image: fake-chat-watcher:latest
+    # bot_manager:
+    #     container_name: manager
+    #     image: manager:latest
+    #     depends_on:
+    #         - redis
+
+
+    # chat_watcher:
+    #     container_name: chat_watcher
+    #     image: chat-watcher:latest
     #     depends_on:
     #         - redis
     #     command:
-    #       python -u main.py
-
-    chat_watcher:
-        container_name: chat_watcher
-        image: chat-watcher:latest
-        depends_on:
-            - redis
-        command:
-            python -u bot.py
+    #         python -u bot.py nl_kripp
 
     migrator:
         container_name: migrator
