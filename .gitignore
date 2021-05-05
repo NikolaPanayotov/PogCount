@@ -2,5 +2,6 @@ node_modules
 .env
 .python-version
 /chat_watcher/__pycache__/
+/bot_manager/__pycache__/
 .vscode
 .DS_Store
