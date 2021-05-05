@@ -126,16 +126,21 @@ class chatWatcher(object):
 
 
 if __name__ == "__main__":
-    # Starting inputs (will be done with args or json later)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("channel", help="channel to connect to")
+    args = parser.parse_args()
+    # ircChannel = 'xqcow'
+    ircChannel = args.channel
+    # Constant variables
     server = 'irc.chat.twitch.tv'
     port = 6667
     nickname = 'pogcount'
     token = os.getenv('OAUTH_TOKEN')
-    ircChannel = 'xqcow'
     hostname = 'redis'
     bot = chatWatcher(nickname, token, ircChannel)
     bot.joinChat()
     bot.redisConnect(hostname)
+    print("Starting to listen to chat...")
     while True:
         emotesCount = bot.messageListen()
         if emotesCount:
