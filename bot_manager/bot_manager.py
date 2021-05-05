@@ -2,7 +2,7 @@
 import docker
 from dotenv import load_dotenv
 import time
-# Local imports
+# Local Imports
 from twitch_errors import OAuthError, TwitchAPIError
 from twitch_api import get_twitch_oauth, get_top_channels
 

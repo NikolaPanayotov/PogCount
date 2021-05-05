@@ -2,6 +2,8 @@
 import os
 import requests
 import json
+# Local Imports
+from twitch_errors import OAuthError, TwitchAPIError
 
 
 def get_twitch_oauth():
