@@ -129,7 +129,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("channel", help="channel to connect to")
     args = parser.parse_args()
-    # ircChannel = 'xqcow'
     ircChannel = args.channel
     # Constant variables
     server = 'irc.chat.twitch.tv'
