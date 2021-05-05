@@ -1,10 +1,14 @@
-# twitch-emote-tracker
-Emote tracking webapp to visualize Twitch emote usage.
+# PogCount
+Webapp to visualize Twitch emote usage in realtime.
 
 # Running locally
 Run the docker-compose:
 ```
 docker-compose -f docker-compose-test.yml up -d
+```
+Run the bot manager (must be in the bot_manager directory of the project):
+```
+python3 bot_manager.py
 ```
 
 To stop services (on windows, my condolances for macOS):
@@ -19,19 +23,11 @@ docker stop $(docker ps -a -q)
 # remove all containers
 docker rm $(docker ps -a -q)
 
-# to rebuild fake_chat_watcher (must be in fake_chat_watcher dir)
-docker build -t fake-chat-watcher .
-
 # to open redis CLI while container is running
 docker exec -it <redis_containerID> redis-cli
 ```
 
 # Current functioning components:
-### Fake chat watcher bot
-- Very simple prototype for actual twitch chat watcher bot
-- Picks 1 of 3 keys randomly
-- The key is sent to redis in the form of an INCR command, to ++ the count for that emote
-- The actual chat watcher has some extra logic to match the words in a chat message to valid emote names
 ### Redis cached storage
 - Runs from standard redis image on dockerhub
 - Uses a `redis.conf` file to allow for outside connections
@@ -46,10 +42,18 @@ docker exec -it <redis_containerID> redis-cli
 ### Realtime data streaming
 - Backend subscribes for change events from DB
 - Backend sends an event to frontend asynchronously
-
-
-# TODO
+### Chat watcher
+- Python irc bot which connects to a stream chat and listens for any emotes
+- Writes emotes found and # of emotes found to Redis cache
 ### Bot manager
-- There is currently a test/scratch file `fake_chat_watcher/bot_manager.py` that spins up fake chat watcher images. 
-- The goal is to have the bot manager be able to start/stop bots as needed based on popular streams.
-- This will probably be called in the `docker-compose-test.yml` instead of just running 1 chat watcher and connecting it to redis.
+- Standalone Python tool to be run in parallel with `docker-compose`
+- Polls Twitch API every 15 min to get top 100 channels
+- Controls creation and removal of standalone chat watcher Docker containers
+
+
+# Future plans
+- Deploy to site
+- Add "current channels" to mongo to keep track of which channels are being used
+- Keep track of emote usage per channel?
+- Ability to select top 10, 100, 1000? channels and update the page
+- More stats? Emotes per hour?
